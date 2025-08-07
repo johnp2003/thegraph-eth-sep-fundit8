@@ -1,4 +1,4 @@
-type Charity @entity(immutable: true) {
+type Charity @entity(immutable: false) {
   id: ID!
   address: Bytes!
   name: String!
@@ -6,7 +6,7 @@ type Charity @entity(immutable: true) {
   campaigns: [Campaign!]! @derivedFrom(field: "charity")
 }
 
-type Campaign @entity(immutable: true) {
+type Campaign @entity(immutable: false) {
   id: ID!
   address: Bytes!
   charity: Charity!
@@ -23,7 +23,7 @@ type Campaign @entity(immutable: true) {
   createdAt: BigInt!
 }
 
-type Milestone @entity(immutable: true) {
+type Milestone @entity(immutable: false) {
   id: ID!
   campaign: Campaign!
   index: Int!
@@ -33,7 +33,7 @@ type Milestone @entity(immutable: true) {
   reachedAt: BigInt
 }
 
-type Donor @entity(immutable: true) {
+type Donor @entity(immutable: false) {
   id: ID!
   address: Bytes!
   totalDonated: BigInt!
@@ -41,7 +41,7 @@ type Donor @entity(immutable: true) {
   donations: [Donation!]! @derivedFrom(field: "donor")
 }
 
-type CampaignDonor @entity(immutable: true) {
+type CampaignDonor @entity(immutable: false) {
   id: ID!
   campaign: Campaign!
   donor: Donor!
@@ -50,7 +50,7 @@ type CampaignDonor @entity(immutable: true) {
   rank: Int
 }
 
-type Donation @entity(immutable: true) {
+type Donation @entity(immutable: false) {
   id: ID!
   donor: Donor!
   campaign: Campaign!
@@ -58,7 +58,7 @@ type Donation @entity(immutable: true) {
   timestamp: BigInt!
 }
 
-type FundRelease @entity(immutable: true) {
+type FundRelease @entity(immutable: false) {
   id: ID!
   campaign: Campaign!
   milestoneIndex: Int!
