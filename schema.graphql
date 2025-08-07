@@ -21,6 +21,7 @@ type Campaign @entity(immutable: false) {
   fundsReleased: [FundRelease!]! @derivedFrom(field: "campaign")
   topDonors: [CampaignDonor!]
   createdAt: BigInt!
+  donorsCount: Int! 
 }
 
 type Milestone @entity(immutable: false) {
@@ -39,6 +40,8 @@ type Donor @entity(immutable: false) {
   totalDonated: BigInt!
   campaignsDonatedTo: [CampaignDonor!]! @derivedFrom(field: "donor")
   donations: [Donation!]! @derivedFrom(field: "donor")
+  donationsCount: Int!
+  lastDonationTime: BigInt
 }
 
 type CampaignDonor @entity(immutable: false) {

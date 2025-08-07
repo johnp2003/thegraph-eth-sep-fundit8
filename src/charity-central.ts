@@ -49,6 +49,7 @@ export function handleCampaignCreated(event: CampaignCreated): void {
   campaign.state = 'Active';
   campaign.topDonors = [];
   campaign.createdAt = event.block.timestamp;
+  campaign.donorsCount = 0;
   campaign.save();
 
   // Start tracking the new campaign contract

@@ -54,15 +54,22 @@ export function handleDonationReceived(event: DonationReceived): void {
   let donationId =
     event.transaction.hash.toHexString() + '-' + event.logIndex.toString();
 
+  // Track if this is a new donor for this campaign
+  let isNewCampaignDonor = false;
+
   // Update donor global entity
   let donor = Donor.load(donorId);
   if (!donor) {
     donor = new Donor(donorId);
     donor.address = event.params.donor;
     donor.totalDonated = event.params.amount;
+    donor.donationsCount = 1;
+    donor.lastDonationTime = event.block.timestamp;
     donor.save();
   } else {
     donor.totalDonated = donor.totalDonated.plus(event.params.amount);
+    donor.donationsCount = donor.donationsCount + 1;
+    donor.lastDonationTime = event.block.timestamp;
     donor.save();
   }
 
@@ -76,6 +83,7 @@ export function handleDonationReceived(event: DonationReceived): void {
     campaignDonor.isTopDonor = false;
     campaignDonor.rank = 0;
     campaignDonor.save();
+    isNewCampaignDonor = true;
   } else {
     campaignDonor.totalDonated = event.params.totalDonated;
     campaignDonor.save();
@@ -89,10 +97,16 @@ export function handleDonationReceived(event: DonationReceived): void {
   donation.timestamp = event.block.timestamp;
   donation.save();
 
-  // Update campaign total donated
+  // Update campaign total donated and donors count
   let campaign = Campaign.load(campaignId);
   if (campaign) {
     campaign.totalDonated = campaign.totalDonated.plus(event.params.amount);
+
+    // If this is a new donor for this campaign, increment the count
+    if (isNewCampaignDonor) {
+      campaign.donorsCount = campaign.donorsCount + 1;
+    }
+
     campaign.save();
 
     // Update campaign top donors
@@ -119,17 +133,6 @@ export function handleMilestoneReached(event: MilestoneReached): void {
   }
   milestone.save();
 }
-
-// export function handleFundsReleased(event: FundsReleased): void {
-//   let campaignId = event.address.toHexString();
-//   let milestoneId = campaignId + '-' + event.params.milestoneIndex.toString();
-
-//   let milestone = Milestone.load(milestoneId);
-//   if (milestone) {
-//     milestone.fundsReleased = true;
-//     milestone.save();
-//   }
-// }
 
 export function handleCampaignDeactivated(event: CampaignDeactivated): void {
   let campaignId = event.address.toHexString();
